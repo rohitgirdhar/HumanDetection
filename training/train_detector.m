@@ -10,9 +10,9 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
     
     % Read all the image files into a 64x128 windows
     pos_files = ReadAllImages(pos_dir, 1);
-    n_pos = size(pos_files, 1);
+    n_pos = length(pos_files);
     neg_files = ReadAllImages(neg_dir, 10);
-    n_neg = size(neg_files, 1);
+    n_neg = length(neg_files;
     
     % Now divide into training and validation
     train_files_perc = 0.66;
