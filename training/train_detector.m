@@ -4,15 +4,17 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
     
     % F_target : The target False Positive rate overall
     % f_max : Max false positive per stage (cascade level)
-    % d_min : Min acceptable detection rate per cascade level
+    % d_min : Min acceptable detection rate per cascade level (not used)
     % pos_dir : directory with positive images
     % neg_dir : directory with negative images
     
     % Read all the image files into a 64x128 windows
-    pos_files = ReadAllImages(pos_dir, 1);
+    pos_files = ReadAllImages(pos_dir, 1, 9);
     n_pos = length(pos_files);
-    neg_files = ReadAllImages(neg_dir, 10);
-    n_neg = length(neg_files;
+    neg_files = ReadAllImages(neg_dir, 10, 9);
+    n_neg = length(neg_files);
+    
+    nbins = 9;
     
     % Now divide into training and validation
     train_files_perc = 0.66;
@@ -42,7 +44,7 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
        j = 0; % The number of classifier at this stage
        while(f > f_max && j < max_classifier)
            j = j+1;
-           classifiers_list = TrainClassifiers(250, pos, neg);
+           classifiers_list = TrainClassifiers(250, pos, neg, nbins);
            best_classifier = GetBestClassifier(classifiers_list, pos_val, neg_val);
            cascade(i,j) = best_classifier;
            % NOTE: Did not implement lowering of thresholds

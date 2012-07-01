@@ -1,5 +1,6 @@
-function images = ReadAllImages(dname, num_samples)
-    % Reads num_samples from each image into the list images
+function images = ReadAllImages(dname, num_samples, nbins)
+    % Reads num_samples from each image into the list images. Directly
+    % returns integral image with nbins bins
     wd = 64;
     ht = 128;
     cd(dname);
@@ -17,7 +18,7 @@ function images = ReadAllImages(dname, num_samples)
                 % center crop the image
                 r = cur_ht/2 - ht/2 -1
                 c = cur_wd/2 - wd/2 -1
-                images{j} = imcrop(cur_image, [r, c, wd, ht]);
+                images{j} = GetIntegralHoG(imcrop(cur_image, [r, c, wd, ht]), nbins);
                 j = j+1;
             else
                 % now try to sample num_sample images out of the image
@@ -26,7 +27,7 @@ function images = ReadAllImages(dname, num_samples)
                     get_images = get_images - 1;
                     r = getRandom(1, cur_ht - ht);
                     c = getRandom(1, cur_wd - wd);
-                    images{j} = imcrop(cur_image, [r, c, wd, ht]);
+                    images{j} = GetIntegralHoG(imcrop(cur_image, [r, c, wd, ht]), nbins);
                     j = j+1;
                 end
             end
