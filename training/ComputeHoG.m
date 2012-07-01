@@ -21,7 +21,7 @@ function block_hist = ComputeHoG(ii, r, c, h, w, nbins)
         % returns a 1*nbins vector with the histogram for that cell
         nbins = size(ii,3);
         hist = zeros(1,nbins);
-        for bin=1:nbins
+        for bin=1:nbins    
             hist(1, bin) = ii(ex, ey, bin) + ii(sx-1, sy-1, bin) - ii(sx-1, ey, bin) - ii(ex, sy-1, bin);
         end
 

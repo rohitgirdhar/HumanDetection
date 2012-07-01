@@ -12,7 +12,7 @@ function clsr = TrainSingleClassifier(r, c, h, w, pos, neg, nbins)
     
     for img = 1:n_neg
         train_data(n_pos+img, :) = ComputeHoG(neg{img},r,c,h,w, nbins);
-        train_class(n_pos+img, 1) = -1;
+        train_class(n_pos+img, 1) = 0;
     end
     
-    clsr = svmtrain(train_data, train_class);
+    clsr = svmtrain(train_data, train_class, 'method', 'LS');
