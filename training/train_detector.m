@@ -49,10 +49,10 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
     
     while(F > F_target && i < max_stages)
        i = i+1;
-       f = 1.0; % The FP rate at this cascade
-       d = 1.0; % The detection rate at this cascade
+       f = double(1.0); % The FP rate at this cascade
+       d = double(1.0); % The detection rate at this cascade
        j = 0; % The number of classifier at this stage
-       disp(['Training stage ', int2str(i), '. Current FPR:', int2str(F)]);
+       fprintf('Stage %d, current F = %f\n', i, F);
        while(f > f_max && j < max_classifiers)
            j = j+1;
            classifiers_list = TrainClassifiers(500, pos, neg, nbins);
@@ -63,8 +63,6 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
            % far it has been trained
            [f,d] = ComputeStatistics(cascade(i, :), pos_files, neg_files)
        end
-       F = F*f;
-       D = D*d;
        % Now, discard the old neg samples, and use those that were
        % misclassified by the current detector
        if(F > F_target)

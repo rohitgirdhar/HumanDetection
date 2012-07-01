@@ -5,30 +5,32 @@ function [best, wts] = GetBestClassifier(lst, pos, neg, wts, nbins)
     n_clsr = length(lst);
     min_err = 99999999;
     best = 1;
+    wts = double(wts);
     error_val = zeros(n_clsr, 1);
     error_occ = zeros(n_clsr, length(pos) + length(neg));
     for i = 1:n_clsr
         [test_data, test_class] = ConvertImageToTest(lst(i), pos, neg, nbins);
         output = svmclassify(lst(i).classifier, test_data);
         % calculte error
-        err = 0;
+        err = 0.0;
         
         for j=1:length(output)
             e = double(wts(j))*double(abs(output(j)-test_class(j)));
             err = err + e;
             error_occ(i, j) = abs(output(j)-test_class(j));
-            if(err < min_err)
-                min_err = err;
-                best = i;
-            end
+            
         end
-        error_val(j,1) = err;
+        error_val(j,1) = double(err);
+        if(err < min_err)
+            min_err = err;
+            best = i;
+        end
     end
     
     ep = double(error_val(best,1));
     beta = ep/(1-ep);
     for j=1:length(output)
-        if(~error_occ(best, j) == 1)
+        if(error_occ(best, j) == 0)
             wts(j) = wts(j)*beta;
         end
     end
