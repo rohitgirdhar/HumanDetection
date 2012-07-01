@@ -8,6 +8,10 @@ classdef LinearSVMClassifierHoG < handle
         
         % The classifier for this block
         classifier;
-        
+    end
+    methods
+        function obj = LinearSVMClassifierHoG()
+            obj.block_r = -1; % to specify its not used
+        end
     end
 end

@@ -17,16 +17,20 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
     nbins = 9;
     
     % Now divide into training and validation
-    train_files_perc = 0.66;
+    train_files_perc = 0.5;
+    total_pos = n_pos;
     lim = uint32(train_files_perc*n_pos);
     n_pos = lim;
+    n_pos_val = total_pos - n_pos;
     pos = pos_files(1:lim);
-    pos_val = pos_files(lim+1:n_pos);
+    pos_val = pos_files(lim+1:total_pos);
     
+    total_neg = n_neg;
     lim = uint32(train_files_perc*n_neg);
     neg = neg_files(1:lim);
     n_neg = lim;
-    neg_val = neg_files(lim+1:n_neg);
+    n_neg_val = total_neg - n_neg;
+    neg_val = neg_files(lim+1:total_neg);
     
     
     
@@ -38,9 +42,11 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
     i = 0;  % current stage
     D = 1.0;    % current detection rate (overall)
     F = 1.0;    % current FP rate (overall)
-    wts = zeros(1, n_pos + n_neg);
-    wts(1:n_pos) = 1.0/(2.0*double(n_pos));
-    wts(n_pos+1:n_pos + n_neg) = 1.0/(2.0*double(n_neg));
+    
+    wts = zeros(1, n_pos_val + n_neg_val);
+    wts(1:n_pos_val) = 1.0/(2.0*double(n_pos_val));
+    wts(n_pos_val+1:n_pos_val + n_neg_val) = 1.0/(2.0*double(n_neg_val));
+    
     while(F > F_target && i < max_stages)
        i = i+1;
        f = 1.0; % The FP rate at this cascade
@@ -49,13 +55,13 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
        disp(['Training stage ', int2str(i), '. Current FPR:', int2str(F)]);
        while(f > f_max && j < max_classifiers)
            j = j+1;
-           classifiers_list = TrainClassifiers(250, pos, neg, nbins);
-           [best_classifier, wts] = GetBestClassifier(classifiers_list, pos, neg, wts, nbins)
+           classifiers_list = TrainClassifiers(500, pos, neg, nbins);
+           [best_classifier, wts] = GetBestClassifier(classifiers_list, pos_val, neg_val, wts, nbins)
            cascade(i,j) = best_classifier;  
            % NOTE: Did not implement lowering of thresholds
            % compute the false positive rate and detection rate for the current stage, as
            % far it has been trained
-           [f,d] = ComputeStatistics(cascade(i, 1:j), pos_val, neg_val, 'FPR', 'DR');
+           [f,d] = ComputeStatistics(cascade(i, :), pos_files, neg_files)
        end
        F = F*f;
        D = D*d;
@@ -64,6 +70,6 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
        if(F > F_target)
            misclassed = GetDetections(neg_files, cascade(1:i, :));
            clearvars neg;
+           neg = misclassed;
        end
-       neg = misclassed;
     end

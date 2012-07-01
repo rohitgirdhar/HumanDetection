@@ -4,7 +4,7 @@ function [best, wts] = GetBestClassifier(lst, pos, neg, wts, nbins)
     
     n_clsr = length(lst);
     min_err = 99999999;
-    best = 0;
+    best = 1;
     error_val = zeros(n_clsr, 1);
     error_occ = zeros(n_clsr, length(pos) + length(neg));
     for i = 1:n_clsr
@@ -24,7 +24,8 @@ function [best, wts] = GetBestClassifier(lst, pos, neg, wts, nbins)
         end
         error_val(j,1) = err;
     end
-    ep = double(err(best,1));
+    
+    ep = double(error_val(best,1));
     beta = ep/(1-ep);
     for j=1:length(output)
         if(~error_occ(best, j) == 1)
