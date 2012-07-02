@@ -27,7 +27,7 @@ function [best, wts] = GetBestClassifier(lst, pos, neg, wts, nbins)
         end
     end
     
-    ep = double(error_val(best,1));
+    ep = double(min_err);
     beta = ep/(1-ep);
     for j=1:length(output)
         if(error_occ(best, j) == 0)

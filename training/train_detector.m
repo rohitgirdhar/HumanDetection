@@ -11,7 +11,7 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
     % Read all the image files into a 64x128 windows
     pos_files = ReadAllImages(pos_dir, 1, 9);
     n_pos = length(pos_files);
-    neg_files = ReadAllImages(neg_dir, 10, 9);
+    neg_files = ReadAllImages(neg_dir, 5, 9);
     n_neg = length(neg_files);
     
     nbins = 9;
@@ -52,22 +52,23 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
        f = double(1.0); % The FP rate at this cascade
        d = double(1.0); % The detection rate at this cascade
        j = 0; % The number of classifier at this stage
-       fprintf('Stage %d, current F = %f\n', i, F);
+       fprintf('Stage %d, current F = %f\n, current D = %f', i, F, D);
        while(f > f_max && j < max_classifiers)
            j = j+1;
-           classifiers_list = TrainClassifiers(500, pos, neg, nbins);
-           [best_classifier, wts] = GetBestClassifier(classifiers_list, pos_val, neg_val, wts, nbins)
+           classifiers_list = TrainClassifiers(400, pos, neg, nbins);
+           [best_classifier, wts] = GetBestClassifier(classifiers_list, pos_val, neg_val, wts, nbins);
+           best_classifier
            cascade(i,j) = best_classifier;  
            % NOTE: Did not implement lowering of thresholds
            % compute the false positive rate and detection rate for the current stage, as
            % far it has been trained
-           [f,d] = ComputeStatistics(cascade(i, :), pos_files, neg_files)
+           [f,d] = ComputeStatistics(cascade(i, :), pos, neg)
        end
+       F = F*f;
+       D = D*d;
        % Now, discard the old neg samples, and use those that were
        % misclassified by the current detector
        if(F > F_target)
-           misclassed = GetDetections(neg_files, cascade(1:i, :));
-           clearvars neg;
-           neg = misclassed;
+           neg = GetDetections(neg_files, cascade(1:i, :));
        end
     end

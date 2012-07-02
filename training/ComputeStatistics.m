@@ -7,7 +7,6 @@ function [fpr, dr] = ComputeStatistics(cascade, pos, neg)
     actual(1:n_pos) = 1;
     
     detected = zeros(1,n_pos+n_neg);
-    
     for i=1:n_pos
         detected(i) = DetectObject(pos{i}, cascade);
     end
