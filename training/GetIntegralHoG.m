@@ -2,13 +2,13 @@ function iimg = GetIntegralHoG(image_window, nbins)
     % This function computes the integral image of the HoGs for each pizel
     % Input : image window to compute for, and number of bins for HoG
     % Return Value : A (ht+1) x (wd+1) x nbins integral image, due to 0 pad
-    wd = 64;
-    ht = 128;
+    wd = size(image_window,2);
+    ht = size(image_window,1);
     max_angle = 180; % from 0 to 180
     bin_size = max_angle/nbins;
     % If the window is not wd x ht, resize it
-    I = imresize(image_window, [ht, wd]);
-    I = double(I);
+%    I = imresize(image_window, [ht, wd]);
+    I = double(image_window);
     
     % now compute the gradients
     
