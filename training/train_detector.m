@@ -53,7 +53,8 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
        d = double(1.0); % The detection rate at this cascade
        j = 0; % The number of classifier at this stage
        fprintf('Stage %d, current F = %f\n, current D = %f', i, F, D);
-       while(f > f_max && j < max_classifiers)
+       stage_f = 1;
+       while(stage_f > f_max && j < max_classifiers)
            j = j+1;
            classifiers_list = TrainClassifiers(400, pos, neg, nbins);
            [best_classifier, wts] = GetBestClassifier(classifiers_list, pos_val, neg_val, wts, nbins);
@@ -62,7 +63,8 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
            % NOTE: Did not implement lowering of thresholds
            % compute the false positive rate and detection rate for the current stage, as
            % far it has been trained
-           [f,d] = ComputeStatistics(cascade(i, :), pos, neg)
+           [f,d] = ComputeStatistics(cascade(i, :), pos, neg);
+           stage_f = stage_f*f;
        end
        F = F*f;
        D = D*d;
