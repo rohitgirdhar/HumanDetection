@@ -1,4 +1,4 @@
-function res = detector(img, cascade)
+function [res, total_win] = detector(img, cascade)
     % This function returns the detections in the cascade in following
     % format : c r w h
     I = imread(img);
@@ -16,9 +16,11 @@ function res = detector(img, cascade)
     
     scale = 1;
     count = 1;
+    total_win = 0;
     for i=1:iter
         for r=1:stride:ht-base_h*scale
             for c=1:stride:wd-base_w*scale
+                total_win = total_win + 1;
                 if(detectSingleScale(ii, r, c, base_h*scale, base_w*scale, scale, cascade) == 1)
                     res{count} = [c,r,base_w*scal, base_h*scal];
                     count = count+1;
