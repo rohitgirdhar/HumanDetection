@@ -19,6 +19,7 @@ function block_hist = ComputeHoG(ii, r, c, h, w, nbins)
     
     function hist = getHistogram(ii, sx, sy, ex, ey)
         % returns a 1*nbins vector with the histogram for that cell
+        sx = sx+1;sy = sy+1; ex = ex+1;ey = ey+1;
         nbins = size(ii,3);
         hist = zeros(1,nbins);
         for bin=1:nbins    

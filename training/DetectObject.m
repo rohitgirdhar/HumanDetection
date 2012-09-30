@@ -5,13 +5,8 @@ function ret = DetectObject(image, cascade)
     ret = 0;
     stages = size(cascade, 1);
     for stage = 1:stages
-        for clsr = 1:length(cascade(stage))
-            if(cascade(stage, clsr).block_r == -1)
-                break;
-            end
-            if(ClassifyHoG(image, cascade(stage, clsr)) == 0)
-                return;
-            end
+        if(cascade(stage).classify(image) ~= 1)
+            return;
         end
     end
     ret = 1;

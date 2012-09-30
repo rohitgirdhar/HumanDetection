@@ -17,7 +17,6 @@ function ClassifierList = TrainClassifiers(total_blocks, pos, neg, nbins)
               [1 0.5]];
           
     for block = 1:total_blocks
-        
         % get the coordinates of top left vertex
         safety_counter = 5000;
         r = getRandom(base_r, ht-min_size);

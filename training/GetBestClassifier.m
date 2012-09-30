@@ -1,4 +1,4 @@
-function [best, wts] = GetBestClassifier(lst, pos, neg, wts, nbins)
+function [best, wts, alpha] = GetBestClassifier(lst, pos, neg, wts, nbins)
     % This runs all the classifiers in lst on pos and neg samples,
     % calculate the error and returns the best classifier, with new weights
     
@@ -36,3 +36,4 @@ function [best, wts] = GetBestClassifier(lst, pos, neg, wts, nbins)
     end
     
     best = lst(best);
+    alpha = log(1.0/beta);

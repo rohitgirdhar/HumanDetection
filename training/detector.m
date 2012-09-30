@@ -24,8 +24,7 @@ function [res, total_win] = detector(img, cascade)
                 if(detectSingleScale(ii, r, c, base_h*scale, base_w*scale, scale, cascade) == 1)
                     res{count} = [c,r,base_w*scal, base_h*scal];
                     count = count+1;
-                end
-                
+                end 
             end
         end
         scale = scale*1.2;
