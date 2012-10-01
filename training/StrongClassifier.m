@@ -9,7 +9,7 @@ classdef StrongClassifier < handle
         function obj = StrongClassifier()
             obj.weak_clsr = LinearSVMClassifierHoG.empty(50,0);
         end
-        function [fp,dt] = learn(self, pos, neg, pos_val, neg_val, false_pos_rate)
+        function [fp,dt] = learn(self, pos, neg, pos_val, neg_val, false_pos_rate, req_det)
             persistent blocks;
             
             if(isempty(blocks))
@@ -46,7 +46,8 @@ classdef StrongClassifier < handle
                 self.coeff(cnt,1) = alpha;
                 cnt = cnt+1;
                 self.threshold = sum(self.coeff)*0.5;
-                [f,d] = self.getStats(pos, neg);
+                [f,d, th] = self.getStats(pos, neg, req_det);
+                self.threshold = th;    % reducing the threshold
                 self
                 fp = fp*f
                 dt = dt*d
@@ -54,36 +55,47 @@ classdef StrongClassifier < handle
             self.coeff = self.coeff(1:cnt-1, 1);
             
         end
-        function [fpr,dr] = getStats(self, pos, neg)
+        function [fpr,dr, th] = getStats(self, pos, neg, req_det)
             n_pos = length(pos);
             n_neg = length(neg);
             actual = zeros(1, n_pos + n_neg);
             actual(1:n_pos) = 1;
             
             detected = zeros(1,n_pos+n_neg);
+            ths = zeros(1,n_pos+n_neg);
+            det_th = zeros(1,n_pos);
             for i=1:n_pos
-                detected(i) = self.predict(pos{i});
+                [res, thr] = self.predict(pos{i});
+                det_th(i) = thr;
+                detected(i) = res;
+                ths(i) = thr;
             end
             
             for i=1:n_neg
-                detected(i + n_pos) = self.predict(neg{i});
+                [res, thr] = self.predict(neg{i});
+                detected(n_pos+i) = res;
+                ths(n_pos+i) = thr;
             end
-           
+            det_th = sort(det_th, 'descend');
+            if(req_det > 1) 
+                req_det = 1;
+            end
+            num_det = ceil(req_det*n_pos);
+            th  = det_th(num_det);
+            dr = num_det/(n_pos*1.0);
             
             fpr = 0;
-            dr = 0;
-            for i=1:n_pos+n_neg
-                if(actual(i) == 1 && detected(i) == 1)
-                    dr = dr + 1;
-                end
-                if(actual(i) == 0 && detected(i) == 1)
+            for i=n_pos+1:n_pos+n_neg
+                if(actual(i) == 0 && ths(i)>th)
                     fpr = fpr + 1;
                 end
             end
             fpr = fpr/(n_neg);
-            dr = dr/(n_pos);
         end
-        function [R] = predict(self, image)
+        
+        
+        
+        function [R, val] = predict(self, image)
             val = 0;
             for i=1:size(self.weak_clsr,2)
                 if(~isempty(self.weak_clsr(i)) && i<=size(self.coeff,1))
@@ -96,7 +108,6 @@ classdef StrongClassifier < handle
                 R = 0;
             end
         end
-        function [R] = predictScale(self, image)
-        end
+        
     end
 end

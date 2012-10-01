@@ -50,7 +50,7 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
        
        fprintf('Stage %d, current F = %f\n, current D = %f', i, F, D);
        
-       [f,d] = cascade(i,1).learn(pos, neg, pos_val, neg_val, f_max);
+       [f,d] = cascade(i,1).learn(pos, neg, pos_val, neg_val, f_max, d_min);
        
        F = F*f;
        D = D*d;
