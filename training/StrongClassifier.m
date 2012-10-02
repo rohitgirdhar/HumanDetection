@@ -49,8 +49,8 @@ classdef StrongClassifier < handle
                 [f,d, th] = self.getStats(pos, neg, req_det);
                 self.threshold = th;    % reducing the threshold
                 self
-                fp = fp*f
-                dt = dt*d
+                fp = f
+                dt = d
             end
             self.coeff = self.coeff(1:cnt-1, 1);
             
@@ -82,18 +82,22 @@ classdef StrongClassifier < handle
             end
             num_det = ceil(req_det*n_pos);
             th  = det_th(num_det);
-            dr = num_det/(n_pos*1.0);
             
             fpr = 0;
+            dr = 0; 
+            for i=1:n_pos
+                if(actual(i) == 1 && ths(i)>=th)
+                    dr = dr+1;
+                end
+            end
+            dr = dr/(n_pos*1.0);
             for i=n_pos+1:n_pos+n_neg
-                if(actual(i) == 0 && ths(i)>th)
+                if(actual(i) == 0 && ths(i)>=th)
                     fpr = fpr + 1;
                 end
             end
-            fpr = fpr/(n_neg);
+            fpr = fpr/(n_neg*1.0);
         end
-        
-        
         
         function [R, val] = predict(self, image)
             val = 0;
