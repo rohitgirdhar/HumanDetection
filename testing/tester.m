@@ -14,14 +14,16 @@ function [total_tp, total_fp, total_fn] = tester(pos_lst, pos_ann_lst, neg_lst, 
     while(fname ~= -1)
         num_try = num_try + 1
         fname_ann = fgetl(Fann);
-        A = PASreadrecord(fname_ann);
-        num_obj = size(A.objects,2);
-        [D, tot_win] = detector(fname, cascade);
-        [TP, FP, FN] = count_stat(A, D);
-        total_tp = total_tp + TP*1.0/num_obj;
-        total_fn = total_fn + FN*1.0/num_obj;
-        total_fp = total_fp + FP*1.0/tot_win;
-        fname = fgetl(Fpos);
+        if(exist(fname, 'file') && exist(fname_ann, 'file'))
+            A = PASreadrecord(fname_ann);
+            num_obj = size(A.objects,2);
+            [D, tot_win] = detector(fname, cascade);
+            [TP, FP, FN] = count_stat(A, D);
+            total_tp = total_tp + TP*1.0/num_obj
+            total_fn = total_fn + FN*1.0/num_obj
+            total_fp = total_fp + FP*1.0/tot_win
+            fname = fgetl(Fpos);
+        end
     end 
     Fneg = fopen(neg_lst);
     fname = fgetl(Fneg);
