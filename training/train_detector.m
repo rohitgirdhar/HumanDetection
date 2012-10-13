@@ -46,7 +46,6 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
        if(i > max_stages)
            break;
        end
-       d = double(1.0); % The detection rate at this cascade
        
        fprintf('Stage %d, current F = %f\n, current D = %f', i, F, D);
        

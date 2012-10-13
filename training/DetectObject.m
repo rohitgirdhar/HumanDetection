@@ -1,4 +1,4 @@
-function ret = DetectObject(image, cascade)
+function [ret, stage] = DetectObject(image, cascade)
     % This function returns 1 if the image, when scaled to 128x64 contains
     % the object. Else returns 0
     

@@ -1,4 +1,4 @@
-function ret = detectSingleScale(ii, r, c, ht, wd, scale, cascade)
+function [ret, stage] = detectSingleScale(ii, r, c, ht, wd, scale, cascade)
     % Returns 1 of detected, else 0
     ret = 0;
     stages = size(cascade,1);
@@ -8,8 +8,8 @@ function ret = detectSingleScale(ii, r, c, ht, wd, scale, cascade)
             if(isempty(cascade(stage).weak_clsr))
                 break;
             end
-            cl = cascade(stage).weak_clsr(clsr);    
-            hog = ComputeHoG(ii,uint32(r+cl.block_r*scale),uint32(c + cl.block_c*scale),uint32(cl.block_w*scale), uint32(cl.block_w*scale),9);
+            cl = cascade(stage).weak_clsr(clsr);
+            hog = ComputeHoG(ii,uint32(r+cl.block_r*scale),uint32(c + cl.block_c*scale),uint32(cl.block_h*scale), uint32(cl.block_w*scale),9);
             for i=1:9
                 hog(i) = hog(i)/(scale*scale);
             end

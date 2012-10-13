@@ -6,9 +6,10 @@ function J = DrawRect(img, boxes)
     for i=1:n
         bxs(i,:) = boxes{i};
     end
+    cols = ['b'];
     imshow(img), hold on
     for i=1:n
-        rectangle('Position',bxs(i, :), 'LineWidth',2, 'EdgeColor','b');
+        rectangle('Position',bxs(i, :), 'LineWidth',2, 'EdgeColor',cols(mod(i,size(cols,2))+1));
     end
         
 
