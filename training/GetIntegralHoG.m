@@ -2,6 +2,9 @@ function iimg = GetIntegralHoG(image_window, nbins)
     % This function computes the integral image of the HoGs for each pizel
     % Input : image window to compute for, and number of bins for HoG
     % Return Value : A (ht+1) x (wd+1) x nbins integral image, due to 0 pad
+    if(size(image_window,1) == 1) 
+        image_window = imread(image_window);
+    end
     wd = size(image_window,2);
     ht = size(image_window,1);
     max_angle = 180; % from 0 to 180

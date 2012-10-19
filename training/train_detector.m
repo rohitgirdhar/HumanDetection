@@ -55,8 +55,32 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
        D = D*d;
        % Now, discard the old neg samples, and use those that were
        % misclassified by the current detector
-       %if(F > F_target)
-       %    neg = GetDetections(neg_files, cascade(1:i, :));
-       %end
+       if(F > F_target)
+           neg = getFalsePositives(neg_dir, 1000, cascade(1:i));
+       end
+       disp('Now neg size = ') ; size(neg)
     end
     cascade = cascade(1:i);
+    
+    function [res] = getFalsePositives(neg_dir, max_elts, cascade) 
+        % Run the classifier on images in neg_dir directory, and get
+        % subwindows that give false positives into res, at max max_elts
+        res = {};
+        r_i = 0;
+        im_list = dir(neg_dir);
+        n_im = length(im_list);
+        for i=1:n_im
+            if(size(res,2) > max_elts)
+                break;
+            end
+            if(~im_list(i).isdir())
+                cur_file = fullfile(neg_dir, im_list(i).name);
+                cur_image = imread(cur_file);
+                dets = detector(cur_file, cascade);
+                for j=1:size(dets, 2)
+                    d = dets{j};
+                    r_i = r_i + 1;
+                    res{r_i} = GetIntegralHoG(imcrop(cur_image, [d(1), d(2), d(3), d(4)]), 9);
+                end
+            end
+        end

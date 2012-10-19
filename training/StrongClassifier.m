@@ -15,7 +15,11 @@ classdef StrongClassifier < handle
             if(isempty(blocks))
                 blocks = getAllBlocks;
             end
-            used = zeros(size(blocks,1),1);
+            
+            persistent used;
+            if(isempty(used))
+                used = zeros(size(blocks,1),1);
+            end
             
             cnt = 1;
             fp = 1.0;
@@ -39,21 +43,21 @@ classdef StrongClassifier < handle
                     WC.learn(pos, neg);
                     clsr(i) = WC;
                 end
-                
+                wts = wts ./ sum(wts);  % normalization
                 [best_c, wts, alpha] = GetBestClassifier(clsr, pos_val, neg_val, wts, 9);
+                
                 self.weak_clsr(cnt) = best_c;
                 self.weak_clsr(cnt)
                 self.coeff(cnt,1) = alpha;
                 cnt = cnt+1;
                 self.threshold = sum(self.coeff)*0.5;
-                [f,d, th] = self.getStats(pos, neg, req_det);
+                [f,d, th] = self.getStats(pos_val, neg_val, req_det);
                 self.threshold = th;    % reducing the threshold
                 self
                 fp = f
                 dt = d
             end
             self.coeff = self.coeff(1:cnt-1, 1);
-            
         end
         function [fpr,dr, th] = getStats(self, pos, neg, req_det)
             n_pos = length(pos);
@@ -98,7 +102,6 @@ classdef StrongClassifier < handle
             end
             fpr = fpr/(n_neg*1.0);
         end
-        
         function [R, val] = predict(self, image)
             val = 0;
             for i=1:size(self.weak_clsr,2)
@@ -111,7 +114,16 @@ classdef StrongClassifier < handle
             else
                 R = 0;
             end
-        end
+        end 
         
+        function check(self, neg_val)  % ONLY FOR DEBUGGING
+            fp = 0;
+            for i=1:size(neg_val,2)
+                if(self.predict(neg_val{i}) ~= 0)
+                    fp = fp+1;
+                end
+            end
+            fp*1.0/size(neg_val,2)
+        end
     end
 end
