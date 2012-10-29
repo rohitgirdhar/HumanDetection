@@ -11,7 +11,7 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
     % Read all the image files into a 64x128 windows
     pos_files = ReadAllImages(pos_dir, 1, 9);
     n_pos = length(pos_files);
-    neg_files = ReadAllImages(neg_dir, 5, 9);
+    neg_files = ReadAllImages(neg_dir, 7, 9);
     n_neg = length(neg_files);
     
     nbins = 9;
@@ -30,7 +30,7 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
     
     
     
-    max_stages = 50; % the max number of stages in the cascade
+    max_stages = 10; % the max number of stages in the cascade
     
     
     cascade(max_stages, 1) = StrongClassifier();
@@ -55,10 +55,13 @@ function cascade = train_detector(F_target, f_max, d_min, pos_dir, neg_dir)
        D = D*d;
        % Now, discard the old neg samples, and use those that were
        % misclassified by the current detector
+       max_neg_samples = 700;
+       clear neg;
        if(F > F_target)
-           neg = getFalsePositives(neg_dir, 1000, cascade(1:i));
+           neg = getFalsePositives(neg_dir, max_neg_samples, cascade(1:i));
        end
        disp('Now neg size = ') ; size(neg)
+       F = min(1.0, size(neg,2)/max_neg_samples*1.0);
     end
     cascade = cascade(1:i);
     
