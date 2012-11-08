@@ -25,7 +25,8 @@ function [res, total_win, avg_stg] = detector(img, cascade)
                 [ret, stg] = detectSingleScale(ii, r, c, base_h*scale, base_w*scale, scale, cascade);
                 tot_stg = tot_stg + stg;
                 if(ret == 1)
-                    res{count} = [c,r,base_w*scal, base_h*scal];
+                    temp = [c,r,base_w*scale, base_h*scale];
+                    res{count} = temp;
                     count = count+1;
                 end 
             end

@@ -10,9 +10,8 @@ function [ret, stage] = detectSingleScale(ii, r, c, ht, wd, scale, cascade)
             end
             cl = cascade(stage).weak_clsr(clsr);
             hog = ComputeHoG(ii,uint32(r+cl.block_r*scale),uint32(c + cl.block_c*scale),uint32(cl.block_h*scale), uint32(cl.block_w*scale),9);
-            for i=1:9
-                hog(i) = hog(i)/(scale*scale);
-            end
+            hog = hog ./ (scale*scale);
+            
             if(svmclassify(cl.classifier, hog) == 1)
                 val = val + cascade(stage).coeff(clsr);
             end
