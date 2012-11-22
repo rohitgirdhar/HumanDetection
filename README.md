@@ -1,6 +1,5 @@
 HumanDetection
 ==============
-
 Implementation of Human Detection Algorithm by Zhu, Avidan et al in CVPR '06.
 
 Author: Rohit Girdhar
@@ -8,14 +7,13 @@ Author: Rohit Girdhar
         IIIT-H
 
 Testing the Code:
-    A pre-trained detector is supplied with the code in detector.mat file
+    A pre-trained detector is supplied with the code in detector_final.mat file
     Load that file into matlab. It gives a cascade object named 'det'
     Use it to classify any image by:
-        res = detector(<image filename> , det);
+        res = detector('image filename' , det);
         % res stores the rectangles of detections
         % To plot those rectangles on the image, use:
-        DrawRect(<image filename> res)
+        DrawRect('image filename', res)
 
 Training the detector:
     Use train_detector with the required arguments
-
